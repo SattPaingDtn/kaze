@@ -22,6 +22,7 @@ export const ja: Dictionary = {
     colors: "カラー",
     configure: "カスタマイズ",
     language: "言語",
+    sound: "サウンド",
   },
   hero: {
     eyebrow: "ワールドプレミア · 東京 2026",

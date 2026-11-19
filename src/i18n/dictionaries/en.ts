@@ -24,6 +24,7 @@ export const en = {
     colors: "Colour",
     configure: "Configure",
     language: "Language",
+    sound: "Sound",
   },
   hero: {
     eyebrow: "World premiere · Tokyo 2026",

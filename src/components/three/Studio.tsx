@@ -19,7 +19,7 @@ export function Studio({ tier, targets, reducedMotion = false }: { tier: Tier; t
   return (
     <>
       <color attach="background" args={[BG]} />
-      <Environment resolution={tier === "high" ? 256 : 128} frames={1}>
+      <Environment resolution={tier === "high" ? 512 : 256} frames={1}>
         <group rotation={[-Math.PI / 2, 0, 0]}>
           <Lightformer intensity={3} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
           {[2, 0, 2, 0, 2, 0, 2, 0].map((x, i) => (

@@ -11,6 +11,8 @@ import { detectTier, useReducedMotion, type Tier } from "@/lib/device";
 import { Loader } from "../ui/Loader";
 import { PerfHud } from "../ui/PerfHud";
 import { LanguageSwitcher } from "../ui/LanguageSwitcher";
+import { SoundToggle, useCue } from "../ui/SoundToggle";
+import { play } from "@/lib/audio";
 import type { RigApi } from "./ConfiguratorScene";
 import styles from "./Configurator.module.scss";
 
@@ -46,6 +48,15 @@ export function Configurator({ locale, t }: { locale: Locale; t: ConfiguratorTex
   const [notice, setNotice] = useState("");
   const rig = useRef<RigApi>(null);
   const fromUrl = useRef(false);
+
+  // Sound design: every state change has a voice (silent until the visitor turns sound on)
+  useCue(paint, "paint");
+  useCue(rim, "tick");
+  useCue(leather, "tick");
+  useCue(view, (v) => (v === "engine" ? "launch" : "view"));
+  useCue(xray, (x) => (x ? "xray" : "tick"));
+  useCue(autoRotate, (a) => (a ? "view" : "tick"));
+  useCue(hotspot?.id ?? null, (h) => (h ? "ping" : null));
 
   // Restore a build from the URL (?paint=ai&rim=bronze&leather=tan&view=interior):
   // shareable links, and the language switcher keeps your build.
@@ -142,6 +153,7 @@ export function Configurator({ locale, t }: { locale: Locale; t: ConfiguratorTex
         </Link>
         <h1 className={styles.title}>{fmt(t.ui.title, { model: MODEL.name })}</h1>
         <LanguageSwitcher locale={locale} label={t.nav.language} />
+        <SoundToggle label={t.nav.sound} />
         <button type="button" className={styles.ghostBtn} aria-pressed={stats} onClick={() => setStats((s) => !s)}>
           {t.ui.stats}
         </button>
@@ -260,7 +272,10 @@ export function Configurator({ locale, t }: { locale: Locale; t: ConfiguratorTex
               <span className={styles.legend}>{t.ui.price}</span>
               <strong>{price(total)}</strong>
             </div>
-            <button type="button" className="btn" onClick={() => setNotice(t.ui.reserveNotice)}>
+            <button type="button" className="btn" onClick={() => {
+              setNotice(t.ui.reserveNotice);
+              play("confirm");
+            }}>
               {t.ui.reserve}
             </button>
           </div>

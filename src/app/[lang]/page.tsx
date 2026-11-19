@@ -5,6 +5,7 @@ import { CampaignStage } from "@/components/campaign/CampaignStage";
 import { CampaignScroll } from "@/components/campaign/CampaignScroll";
 import { ColorPicker } from "@/components/campaign/ColorPicker";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { CampaignSounds, SoundToggle } from "@/components/ui/SoundToggle";
 import { isLocale, localePath, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { fmt } from "@/i18n/format";
@@ -45,9 +46,11 @@ export default async function CampaignPage({ params }: Props) {
           </ul>
         </nav>
         <LanguageSwitcher locale={lang} label={t.nav.language} />
+        <SoundToggle label={t.nav.sound} />
         <Link href={localePath(lang, "/configurator")} className="btn btn--small">{t.nav.configure}</Link>
       </header>
 
+      <CampaignSounds />
       <CampaignScroll>
         <main id="main">
           <p className="sr-only">{t.campaign.srIntro}</p>

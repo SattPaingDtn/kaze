@@ -76,14 +76,23 @@ export function Car({
       envMapIntensity: 1.5,
     });
     const badge = new MeshStandardMaterial({ color: "#1b1c1f", metalness: 1, roughness: 0.25 });
+    // The GLB ships arch liners, diffuser and sills in flat light grey: next to
+    // a silver paint they read as unpainted body panels. Real cars: satin black.
+    const satin = new MeshPhysicalMaterial({ color: "#16171a", metalness: 0.2, roughness: 0.55, clearcoat: 0.3 });
 
-    const owned = new Set<Material>([paint, rim, leather, glass, badge]);
+    // Tail-light lenses + reflectors: tinted glass that follows the paint (colour-matched lights).
+    const lens = new MeshPhysicalMaterial({ roughness: 0.05, clearcoat: 1, transparent: true, opacity: 0.88, emissiveIntensity: 0.35 });
+
+    const owned = new Set<Material>([paint, rim, leather, glass, badge, satin, lens]);
     const cloned = new Map<Material, Material>();
 
     solid.traverse((o) => {
       if (!(o instanceof Mesh)) return;
-      const n = o.name;
+      // three renames duplicate names on load (centre, centre_1, centre_2…) — strip the suffix
+      const n = o.name.replace(/_\d+$/, "");
       if (n === "body") o.material = paint;
+      else if (n === "brakes" || n === "lights_red") o.material = lens;
+      else if (/^(interior_(dark|light)|carpet|carbon_fibre(_trim)?|steering_carbon)$/.test(n)) o.material = satin;
       else if (n.startsWith("rim_")) o.material = rim;
       else if (n === "leather" || n === "steering_leather") o.material = leather;
       else if (n === "glass") o.material = glass;
@@ -110,7 +119,7 @@ export function Car({
       Boolean,
     ) as Object3D[];
 
-    return { solid, ghost, wheels, paint, rim, leather, xray, owned };
+    return { solid, ghost, wheels, paint, lens, rim, leather, xray, owned };
   }, [scene]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Manual disposal: R3F only auto-disposes objects it created declaratively.
@@ -139,6 +148,8 @@ export function Car({
       mat.color.lerp(c, k);
       if (Math.abs(mat.color.r - c.r) + Math.abs(mat.color.g - c.g) + Math.abs(mat.color.b - c.b) > 0.002) animating = true;
     }
+    rig.lens.color.copy(rig.paint.color); // lenses ride on the paint's eased colour
+    rig.lens.emissive.copy(rig.paint.color);
     const rimDef = RIMS.find((r) => r.id === t.rim) ?? RIMS[0];
     tmp.rim.set(rimDef.hex);
     rig.rim.color.lerp(tmp.rim, k);
