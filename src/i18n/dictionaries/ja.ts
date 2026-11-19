@@ -1,0 +1,132 @@
+import type { Dictionary } from "./en";
+
+/**
+ * 日本語コピー。Typed as `Dictionary`, so a missing or misspelled key is a
+ * compile error. Not a word-for-word translation: units, test cycle (WLTC is
+ * the Japanese standard), price style and tone are localised.
+ */
+export const ja: Dictionary = {
+  meta: {
+    title: "KAZE GT-01 — 風を、まとう。",
+    description: "架空のグランドツアラー「KAZE GT-01」のインタラクティブ3Dキャンペーンサイトとコンフィギュレーター。",
+    configuratorTitle: "KAZE GT-01 をカスタマイズ",
+    configuratorDescription: "ボディカラー、ホイール、レザー、インテリア、透視エンジンビューをリアルタイム3Dで。",
+  },
+  nav: {
+    skip: "本文へスキップ",
+    home: "KAZE ホーム",
+    chapters: "チャプター",
+    design: "デザイン",
+    performance: "性能",
+    interior: "インテリア",
+    colors: "カラー",
+    configure: "カスタマイズ",
+    language: "言語",
+  },
+  hero: {
+    eyebrow: "ワールドプレミア · 東京 2026",
+    accent: "Wear the wind.",
+    accentLang: "en",
+    tagline: "風を、まとう。",
+    scroll: "スクロール",
+  },
+  chapters: {
+    design: {
+      eyebrow: "01 — デザイン",
+      title: "風が削り出したフォルム",
+      body: "ノーズからテールまで、ひと筆で描いた一本のライン。Cd値0.29。120km/hに達するまで姿を隠すアクティブエアロ。",
+    },
+    performance: {
+      eyebrow: "02 — パフォーマンス",
+      title: "電動の加速、尽きない航続",
+      body: "キャビン後方のコンパクトな2気筒発電エンジンが、2基のe-Axleへ電力を送る。0–100km/h加速は2.9秒。",
+    },
+    interior: {
+      eyebrow: "03 — インテリア",
+      title: "すべては、ドライバーのために",
+      body: "手に馴染む物理スイッチ、手縫いのレザー、そして路面のすべてを伝えるステアリング。",
+    },
+    colors: {
+      eyebrow: "04 — カラー",
+      title: "日本の六色",
+      body: "朱から藍まで。7層の塗装とクリアコートが、吸い込まれるような奥行きを生む。",
+    },
+    build: {
+      eyebrow: "05 — あなただけの一台へ",
+      title: "GT-01をつくる",
+      body: "回して、開けて、その内側まで。すべての仕上げをリアルタイム3Dで選べます。",
+    },
+  },
+  campaign: {
+    srIntro:
+      "このページではKAZE GT-01の3Dモデルを表示しています。スクロールに合わせてカメラが車の周りを移動し、サイドビュー、キャビン後方のエンジンの透視ビュー、運転席、カラーバリエーションを順に紹介します。",
+    sceneLabel: "スクロールに合わせて動くKAZE GT-01の3Dモデル",
+    stats: [
+      { label: "システム最高出力", value: "610", unit: "PS" },
+      { label: "0–100km/h加速", value: "2.9", unit: "秒" },
+      { label: "航続距離", value: "820", unit: "km" },
+    ],
+    paintLegend: "3Dモデルのボディカラーを選択",
+    finishesNote: "全{count}色 · 3Dモデルで試せます",
+    openConfigurator: "3Dコンフィギュレーターを開く",
+  },
+  specs: [
+    { label: "システム最高出力", value: "610 PS" },
+    { label: "0–100km/h加速", value: "2.9秒" },
+    { label: "最高速度", value: "318 km/h" },
+    { label: "航続距離（WLTC）", value: "820 km" },
+    { label: "空気抵抗係数", value: "Cd 0.29" },
+    { label: "車両重量", value: "1,640 kg" },
+  ],
+  paints: {
+    shu: "シュ・ヴァーミリオン",
+    sumi: "スミ・ブラック",
+    yuki: "ユキ・パール",
+    ai: "アイ・インディゴ",
+    matcha: "マッチャ・グリーン",
+    kin: "キン・シャンパン",
+  },
+  rims: { chrome: "ポリッシュ", gunmetal: "ガンメタリック", bronze: "サテンブロンズ" },
+  leathers: { black: "ネロ", tan: "クオイオ・タン", red: "朱レッド", white: "和紙ホワイト" },
+  views: {
+    exterior: "外観",
+    front: "フロント",
+    side: "サイド",
+    rear: "リア",
+    wheel: "ホイール",
+    interior: "室内",
+    engine: "エンジン",
+  },
+  hotspots: {
+    lights: { title: "Kiri LEDマトリクス", body: "対向車を検知して部分的に減光する、84セグメントのアダプティブヘッドライト。" },
+    brakes: { title: "カーボンセラミックブレーキ", body: "398mmディスクと6ピストンキャリパー。100→0km/hの制動距離は31m。" },
+    cockpit: { title: "ドライバー優先のコックピット", body: "手縫いのレザー、フラットボトムのステアリング。タッチスクリーンはゼロ。" },
+    engine: { title: "2気筒レンジエクステンダー", body: "1.2Lの発電用エンジンと2基のe-Axle。システム最高出力610PS。" },
+  },
+  configurator: {
+    title: "{model} コンフィギュレーター",
+    back: "KAZEキャンペーンに戻る",
+    stats: "計測",
+    stageLabel: "3Dビュー。矢印キーで回転、プラスとマイナスでズーム、Escキーで外観に戻ります。",
+    sceneLabel: "インタラクティブ3Dコンフィギュレーター。矢印キーで回転、プラスとマイナスでズーム。",
+    viewsLabel: "カメラ視点",
+    xray: "透視",
+    spin: "360°回転",
+    closeDetail: "詳細を閉じて外観に戻る",
+    lookAround: "ドラッグで車内を見渡せます",
+    options: "仕様の選択",
+    paint: "ボディカラー",
+    wheels: "ホイール",
+    leather: "レザー",
+    included: "標準",
+    highlights: "注目ポイント",
+    hotspotLabel: "{title}：詳細を表示",
+    price: "参考価格",
+    reserve: "予約する",
+    reserveNotice: "これはポートフォリオ用のデモです。実際の注文は行われていません。",
+    summary: "{model}、{paint}、{rim}ホイール、{leather}レザー。合計{total}。現在の視点：{view}。",
+  },
+  loader: { loading: "3Dモデルを読み込み中 {progress}%", ready: "3Dモデルの準備完了" },
+  credits:
+    "3Dカー：「Ferrari 458 Italia」vicent091036 作（CC BY 4.0、three.js examplesより）。エンジン：「2 Cylinder Engine」Khronos glTF Sample Models（CC BY 4.0、Okinoによる変換）。KAZEはポートフォリオ用の架空ブランドです。",
+};

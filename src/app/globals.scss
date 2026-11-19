@@ -1,0 +1,563 @@
+@use "../styles/mixins" as *;
+
+:root {
+  --bg: #0b0c0e;
+  --panel: #111215;
+  --fg: #f2f1ee;
+  --muted: #a6a9b0; /* 8.4:1 on --bg — passes WCAG AA / JIS X 8341-3 */
+  --line: rgba(255, 255, 255, 0.12);
+  --accent: #c8261c; /* white text on this = 5.7:1 */
+  --accent-text: #ff7a66;
+  --focus: #5fe3ff;
+  --gutter: clamp(16px, 6vw, 96px);
+  /* Font stacks. Michroma/Inter have no Japanese glyphs, so --font-jp is always the fallback. */
+  --display: var(--font-display), var(--font-jp), sans-serif;
+  --heading: var(--display);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body), var(--font-jp), "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* Never remove focus outlines — replace them with a clearer one */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--fg);
+  color: var(--bg);
+  border-radius: 6px;
+  translate: 0 -150%;
+  &:focus {
+    translate: 0 0;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: background 0.2s, transform 0.2s;
+  &:hover {
+    background: #a81f17;
+  }
+  &:active {
+    transform: scale(0.97);
+  }
+  &--small {
+    padding: 9px 16px;
+    font-size: 11px;
+  }
+}
+
+/* ───────────── Campaign ───────────── */
+
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none; /* scroll page: canvas never steals touch-scroll on phones */
+}
+
+.site-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 18px var(--gutter);
+  background: linear-gradient(var(--bg), transparent);
+
+  nav ul {
+    display: flex;
+    gap: 28px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    a:hover {
+      color: var(--fg);
+    }
+    @include mobile {
+      display: none;
+    }
+  }
+  .lang-switch {
+    margin-left: auto;
+  }
+  @include mobile {
+    gap: 10px;
+    nav:not(.lang-switch) {
+      display: none; /* hidden <ul> alone still left an empty flex item + gap */
+    }
+    .logo {
+      letter-spacing: 0.24em;
+    }
+    .btn--small {
+      padding-inline: 14px;
+    }
+  }
+}
+
+/* EN / JP switch (both pages) */
+.lang-switch {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  a {
+    display: grid;
+    place-items: center;
+    min-width: 36px;
+    min-height: 28px; /* ≥ 24px touch target (WCAG 2.5.8) */
+    padding: 0 8px;
+    border-radius: 999px;
+    color: var(--muted);
+    transition: background 0.2s, color 0.2s;
+    &:hover {
+      color: var(--fg);
+    }
+    &[aria-current="true"] {
+      background: var(--fg);
+      color: var(--bg);
+      cursor: default;
+    }
+  }
+}
+
+.logo {
+  font-family: var(--display);
+  font-size: 16px;
+  letter-spacing: 0.32em;
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  span {
+    color: var(--accent);
+    letter-spacing: 0;
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+    font-size: 20px;
+  }
+}
+
+.chapter {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding: 120px var(--gutter);
+
+  /* scrim so copy stays readable over any part of the 3D scene */
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+  }
+  &[data-align="left"]::before {
+    background: linear-gradient(90deg, rgba(11, 12, 14, 0.85), rgba(11, 12, 14, 0) 55%);
+  }
+  &[data-align="right"] {
+    justify-content: flex-end;
+    &::before {
+      background: linear-gradient(270deg, rgba(11, 12, 14, 0.85), rgba(11, 12, 14, 0) 55%);
+    }
+  }
+
+  @include mobile {
+    align-items: flex-end;
+    padding: 96px 20px 48px;
+    &[data-align]::before {
+      background: linear-gradient(0deg, rgba(11, 12, 14, 0.96) 15%, rgba(11, 12, 14, 0) 60%);
+    }
+  }
+}
+
+.copy {
+  max-width: 440px;
+
+  h2 {
+    font-family: var(--heading);
+    font-weight: 400;
+    font-size: clamp(26px, 3.4vw, 44px);
+    line-height: 1.15;
+    text-wrap: balance;
+    margin: 0 0 18px;
+  }
+  p {
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--muted);
+    margin: 0 0 16px;
+  }
+  &--center {
+    margin-inline: auto;
+    text-align: center;
+    max-width: 760px;
+  }
+}
+
+.eyebrow {
+  font-size: 12px !important;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-text) !important;
+}
+
+/* X-ray chapter: the glowing cyan ghost is much brighter than the solid car,
+   so the scrim reaches further to keep body copy at ≥ 4.5:1 */
+#performance.chapter::before {
+  background: linear-gradient(270deg, rgba(11, 12, 14, 0.94) 30%, rgba(11, 12, 14, 0) 72%);
+  @include mobile {
+    background: linear-gradient(0deg, rgba(11, 12, 14, 0.97) 30%, rgba(11, 12, 14, 0) 72%);
+  }
+}
+
+.chapter--hero {
+  align-items: flex-end;
+  padding-bottom: 14svh;
+  &::before {
+    background: linear-gradient(0deg, rgba(11, 12, 14, 0.7), transparent 45%);
+  }
+}
+
+.hero-title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(34px, 8vw, 120px);
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  margin: 0 0 16px;
+}
+
+.tagline {
+  font-size: clamp(16px, 1.6vw, 20px) !important;
+  color: var(--fg) !important;
+  span {
+    color: var(--accent-text);
+    margin-right: 8px;
+  }
+}
+
+.scroll-cue {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  translate: -50% 0;
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  &::after {
+    content: "";
+    display: block;
+    width: 1px;
+    height: 40px;
+    margin: 10px auto 0;
+    background: linear-gradient(var(--fg), transparent);
+    animation: cue 1.8s ease-in-out infinite;
+    transform-origin: top;
+  }
+}
+
+@keyframes cue {
+  0% {
+    transform: scaleY(0);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 28px 0 0;
+  dt {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  dd {
+    margin: 0;
+    font-family: var(--display);
+    font-size: clamp(20px, 2.4vw, 30px);
+    white-space: nowrap;
+  }
+}
+
+.swatches {
+  border: 0;
+  padding: 0;
+  margin: 24px 0 8px;
+  &__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    pointer-events: auto;
+  }
+  &__name {
+    margin: 14px 0 0 !important;
+    color: var(--fg) !important;
+    font-size: 15px !important;
+    span {
+      color: var(--accent-text);
+      margin-right: 6px;
+    }
+  }
+}
+
+.swatch {
+  @include swatch;
+  width: 44px;
+  height: 44px;
+}
+
+.fineprint {
+  font-size: 13px !important;
+}
+
+.chapter--build {
+  align-items: flex-end;
+  padding-bottom: 56px;
+  .copy {
+    max-width: 1000px;
+    padding: 32px clamp(20px, 4vw, 48px);
+    border-radius: 24px;
+    background: rgba(11, 12, 14, 0.72);
+    border: 1px solid var(--line);
+  }
+  &::before {
+    background: none;
+  }
+}
+
+.specs {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  margin: 24px 0 28px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  text-align: left;
+  div {
+    padding: 14px 16px;
+    background: var(--bg);
+  }
+  dt {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  dd {
+    margin: 6px 0 0;
+    font-size: 17px;
+  }
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @include mobile {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.site-footer {
+  position: relative;
+  z-index: 1;
+  padding: 32px var(--gutter) 48px;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  p {
+    margin: 0;
+    max-width: 900px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+}
+
+/* ───────────── 3D hotspots (rendered by drei <Html>) ───────────── */
+
+.hotspot {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--bg);
+  background: var(--fg);
+  box-shadow: 0 0 0 6px rgba(242, 241, 238, 0.18);
+  transition: opacity 0.25s, transform 0.25s, background 0.2s;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid rgba(242, 241, 238, 0.6);
+    animation: ping 2.4s ease-out infinite;
+  }
+  &:hover,
+  &[aria-pressed="true"] {
+    background: var(--accent);
+    color: #fff;
+    transform: scale(1.1);
+  }
+  &[data-hidden="true"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+  @include mobile {
+    width: 28px; /* still above the 24px WCAG 2.2 target size */
+    height: 28px;
+    font-size: 15px;
+    box-shadow: 0 0 0 4px rgba(242, 241, 238, 0.18);
+  }
+}
+
+@keyframes ping {
+  from {
+    transform: scale(0.9);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* ───────────── Japanese typography ─────────────
+   Only applies on /ja (html lang="ja"), so English layout is untouched. */
+
+:lang(ja) {
+  line-break: strict; /* 禁則処理: never start a line with 。、ー or small kana */
+  word-break: auto-phrase; /* Chrome 119+: wrap between phrases (文節) instead of mid-word */
+}
+
+html:lang(ja) {
+  /* Michroma is a wide Latin display face; Japanese headings read better in a gothic. */
+  --heading: var(--font-jp), "Hiragino Sans", sans-serif;
+
+  .copy {
+    h2 {
+      font-weight: 700;
+      font-size: clamp(24px, 3vw, 40px);
+      line-height: 1.4;
+      letter-spacing: 0.04em;
+      font-feature-settings: "palt"; /* proportional kana spacing for display sizes */
+    }
+    p {
+      font-size: 16px;
+      line-height: 1.95; /* CJK needs more leading than Latin */
+      letter-spacing: 0.04em;
+    }
+  }
+  /* wide uppercase tracking looks broken on kana/kanji */
+  .eyebrow,
+  .stats dt,
+  .specs dt,
+  .site-header nav ul,
+  .btn {
+    letter-spacing: 0.06em;
+  }
+  .stats dt,
+  .specs dt {
+    text-transform: none; /* keep "km/h" lowercase inside Japanese labels */
+  }
+  .tagline {
+    letter-spacing: 0.08em;
+  }
+}

@@ -1,0 +1,69 @@
+@mixin mobile {
+  @media (max-width: 767px) {
+    @content;
+  }
+}
+
+@mixin chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.12);
+  }
+  &[aria-pressed="true"] {
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+/* Visually a colour dot, semantically a native radio input */
+@mixin swatch {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: var(--swatch);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25), inset 0 -10px 16px rgba(0, 0, 0, 0.35), inset 0 8px 12px rgba(255, 255, 255, 0.18);
+  transition: transform 0.2s;
+
+  &[data-metallic="true"] {
+    background: conic-gradient(from 200deg, var(--swatch), #ffffff55, var(--swatch), #00000066, var(--swatch));
+  }
+
+  input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  &:hover {
+    transform: scale(1.08);
+  }
+
+  &:has(input:checked) {
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
+  }
+
+  &:has(input:focus-visible) {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+  }
+}
