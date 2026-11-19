@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { LOCALES, localePath } from "@/i18n/config";
 import { SITE_URL } from "@/lib/site";
 
-const PAGES = ["/", "/configurator"];
+const PAGES = ["/", "/configurator", "/test-drive"];
 
 /**
  * /sitemap.xml — every page in every language, each listing its translations

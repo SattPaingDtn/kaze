@@ -12,7 +12,7 @@ import { createStore } from "./store";
  *  - Hidden tab → context suspended (no CPU, no sound in the background).
  */
 
-export type Cue = "tick" | "paint" | "view" | "xray" | "launch" | "ping" | "confirm" | "wind";
+export type Cue = "tick" | "paint" | "view" | "xray" | "launch" | "ping" | "confirm" | "wind" | "bump";
 
 const KEY = "kaze-sound";
 export const soundStore = createStore({ on: false });
@@ -66,6 +66,23 @@ export function setSound(on: boolean) {
 export function play(cue: Cue) {
   if (!g || !soundStore.get().on || g.ctx.state !== "running") return;
   CUES[cue](g, g.ctx.currentTime + 0.01);
+}
+
+let drive: ReturnType<typeof driveVoice> | null = null;
+
+/**
+ * Test-drive sound, called every frame with the car's speed (m/s) and throttle
+ * (0..1). `null` stops it. Silent while sound is off; picks up when turned on.
+ */
+export function driveSound(speed: number | null, load = 0) {
+  if (speed === null) {
+    drive?.stop();
+    drive = null;
+    return;
+  }
+  if (!g || !soundStore.get().on || g.ctx.state !== "running") return;
+  drive ??= driveVoice(g);
+  drive.set(Math.abs(speed), load);
 }
 
 /* ───────────────────────── engine ───────────────────────── */
@@ -245,6 +262,67 @@ function windBed(graph: Graph) {
   };
 }
 
+/**
+ * Continuous EV drive voice: inverter whine (pitch = speed, louder on throttle),
+ * a sub rumble for weight, and wind noise that grows with speed². The music
+ * ducks while you drive so the car owns the mix.
+ */
+function driveVoice(graph: Graph) {
+  const { ctx, sfx, music } = graph;
+  const out = gain(ctx, 0);
+  out.connect(sfx);
+  const whine = gain(ctx, 0);
+  whine.connect(out);
+  const oscs = ([["sine", 1, 1], ["triangle", 2.01, 0.3], ["sine", 3, 0.12]] as const).map(([type, mult, lvl]) => {
+    const o = ctx.createOscillator();
+    o.type = type;
+    o.frequency.value = 140 * mult;
+    o.connect(gain(ctx, lvl)).connect(whine);
+    o.start();
+    return { o, mult };
+  });
+  const sub = ctx.createOscillator();
+  sub.frequency.value = 38;
+  const subGain = gain(ctx, 0);
+  sub.connect(subGain).connect(out);
+  sub.start();
+  const air = noiseSrc(graph);
+  const airF = filter(ctx, "bandpass", 400, 0.6);
+  const airGain = gain(ctx, 0);
+  air.connect(airF).connect(airGain).connect(out);
+  air.start();
+  ramp(ctx, out.gain, 1, 0.4);
+
+  let last = 0;
+  const to = (p: AudioParam, v: number, t: number) => {
+    p.cancelScheduledValues(t);
+    p.setTargetAtTime(v, t, 0.06);
+  };
+  return {
+    set(v: number, load: number) {
+      const t = ctx.currentTime;
+      if (t - last < 0.05) return; // ~20 updates/s is plenty for a smooth glide
+      last = t;
+      const x = Math.min(v / 50, 1); // 0..1 of top speed
+      oscs.forEach(({ o, mult }) => to(o.frequency, (140 + x * 1500) * mult, t));
+      to(whine.gain, v < 0.2 ? 0 : 0.012 + 0.03 * load + 0.025 * x, t);
+      to(sub.frequency, 34 + x * 40, t);
+      to(subGain.gain, Math.min(v / 6, 1) * (0.05 + 0.08 * load), t);
+      to(airF.frequency, 350 + x * 1800, t);
+      to(airGain.gain, x * x * 0.22, t);
+      to(music.gain, 0.55 - 0.3 * Math.min(v / 15, 1), t);
+    },
+    stop() {
+      const t = ctx.currentTime;
+      ramp(ctx, out.gain, 0, 0.3);
+      to(music.gain, 0.55, t);
+      oscs.forEach(({ o }) => o.stop(t + 0.4));
+      sub.stop(t + 0.4);
+      air.stop(t + 0.4);
+    },
+  };
+}
+
 /* ───────────────────────── sound effects ───────────────────────── */
 
 const CUES: Record<Cue, (g: Graph, t: number) => void> = {
@@ -362,6 +440,20 @@ const CUES: Record<Cue, (g: Graph, t: number) => void> = {
     music.gain.cancelScheduledValues(t);
     music.gain.setTargetAtTime(0.18, t, 0.1);
     music.gain.setTargetAtTime(0.55, t + 2.8, 0.7);
+  },
+
+  /** Test drive: you touched a building. A dull body thud + a scrape of noise. */
+  bump(graph, t) {
+    const { ctx, sfx } = graph;
+    const o = ctx.createOscillator();
+    o.frequency.setValueAtTime(95, t);
+    o.frequency.exponentialRampToValueAtTime(40, t + 0.25);
+    const e = ctx.createGain();
+    decay(e.gain, t, 0.35, 0.35);
+    o.connect(e).connect(sfx);
+    o.start(t);
+    o.stop(t + 0.4);
+    sweep(graph, t, { type: "bandpass", q: 1.5, from: 900, to: 2600, len: 0.35, peak: 0.12 });
   },
 
   /** Hotspot opened: a soft glass bell. */

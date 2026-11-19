@@ -203,6 +203,12 @@ export function Configurator({ locale, t }: { locale: Locale; t: ConfiguratorTex
             <button type="button" className={styles.chip} aria-pressed={autoRotate} onClick={() => setAutoRotate((a) => !a)} disabled={reduced}>
               {t.ui.spin}
             </button>
+            <Link
+              className={`${styles.chip} ${styles.driveLink}`}
+              href={`${localePath(locale, "/test-drive")}?${new URLSearchParams({ paint, rim, leather })}`}
+            >
+              {t.nav.testDrive} <span aria-hidden="true">→</span>
+            </Link>
           </div>
 
           {hotspot && (

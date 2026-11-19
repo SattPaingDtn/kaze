@@ -118,7 +118,10 @@ export default async function CampaignPage({ params }: Props) {
                   <div key={s.label}><dt>{s.label}</dt><dd>{s.value}</dd></div>
                 ))}
               </dl>
-              <Link href={localePath(lang, "/configurator")} className="btn">{t.campaign.openConfigurator}</Link>
+              <div className="cta-row">
+                <Link href={localePath(lang, "/configurator")} className="btn">{t.campaign.openConfigurator}</Link>
+                <Link href={localePath(lang, "/test-drive")} className="btn btn--ghost">{t.campaign.testDrive}</Link>
+              </div>
             </div>
           </section>
         </main>

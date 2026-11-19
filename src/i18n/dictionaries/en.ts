@@ -13,6 +13,8 @@ export const en = {
     description: "Interactive 3D campaign microsite and configurator for the fictional KAZE GT-01 grand tourer.",
     configuratorTitle: "Configure your KAZE GT-01",
     configuratorDescription: "Real-time 3D configurator: paint, wheels, leather, interior and x-ray engine views.",
+    testDriveTitle: "Test drive the KAZE GT-01 in Shibuya, Tokyo",
+    testDriveDescription: "Drive the GT-01 through the real streets of Shibuya on a live 3D map built from OpenStreetMap data.",
   },
   nav: {
     skip: "Skip to content",
@@ -25,6 +27,7 @@ export const en = {
     configure: "Configure",
     language: "Language",
     sound: "Sound",
+    testDrive: "Test drive",
   },
   hero: {
     eyebrow: "World premiere · Tokyo 2026",
@@ -72,6 +75,7 @@ export const en = {
     paintLegend: "Choose a paint colour for the 3D car",
     finishesNote: "{count} finishes · try them on the car",
     openConfigurator: "Open the 3D configurator",
+    testDrive: "Test drive it in Tokyo",
   },
   specs: [
     { label: "System output", value: "610 PS" },
@@ -128,6 +132,26 @@ export const en = {
     reserve: "Reserve",
     reserveNotice: "This is a portfolio demo — no order was placed.",
     summary: "{model} in {paint}, {rim} wheels, {leather} leather. Total {total}. Current view: {view}.",
+  },
+  testDrive: {
+    title: "Test drive · Shibuya, Tokyo",
+    back: "Back to the KAZE campaign",
+    sceneLabel: "The KAZE GT-01 seen from behind, on a live 3D map of Shibuya, Tokyo",
+    stageLabel:
+      "Test drive. Arrow keys or W A S D to drive, Space to brake, R to return to Shibuya Crossing. The speed is announced below.",
+    hint: "↑ W accelerate · ↓ S brake / reverse · ← → steer · R reset",
+    touchHint: "Hold the pedals to drive",
+    speedUnit: "km/h",
+    gear: "Gear",
+    reset: "Back to Shibuya Crossing",
+    paint: "Paint",
+    left: "Steer left",
+    right: "Steer right",
+    brake: "Brake / reverse",
+    throttle: "Accelerate",
+    bump: "Bump! The buildings here are real.",
+    mapLoading: "Loading the streets of Shibuya…",
+    error: "The map could not load. Check your connection and reload the page.",
   },
   loader: { loading: "Loading 3D model {progress}%", ready: "3D model ready" },
   credits:
