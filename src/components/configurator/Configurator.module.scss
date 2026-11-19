@@ -104,6 +104,13 @@
   @include chip;
 }
 
+.driveLink {
+  border-color: var(--accent);
+  &:hover {
+    background: var(--accent) !important;
+  }
+}
+
 .info {
   position: absolute;
   top: 16px;

@@ -19,20 +19,27 @@ export function Studio({ tier, targets, reducedMotion = false }: { tier: Tier; t
   return (
     <>
       <color attach="background" args={[BG]} />
-      <Environment resolution={tier === "high" ? 512 : 256} frames={1}>
-        <group rotation={[-Math.PI / 2, 0, 0]}>
-          <Lightformer intensity={3} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
-          {[2, 0, 2, 0, 2, 0, 2, 0].map((x, i) => (
-            <Lightformer key={i} form="circle" intensity={3} rotation={[Math.PI / 2, 0, 0]} position={[x, 4, i * 4]} scale={[4, 1, 1]} />
-          ))}
-          <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, 1, -1]} scale={[50, 2, 1]} />
-          <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, -1, -1]} scale={[50, 2, 1]} />
-          <Lightformer intensity={2} rotation-y={-Math.PI / 2} position={[10, 1, 0]} scale={[50, 1, 1]} />
-          <Lightformer form="ring" color="#c8261c" intensity={6} scale={2} position={[-15, 4, -18]} />
-        </group>
-      </Environment>
+      <StudioLights tier={tier} />
       <Floor targets={targets} reducedMotion={reducedMotion} />
     </>
+  );
+}
+
+/** The studio's light rig on its own (no backdrop, no floor) — reused by the test drive. */
+export function StudioLights({ tier }: { tier: Tier }) {
+  return (
+    <Environment resolution={tier === "high" ? 512 : 256} frames={1}>
+      <group rotation={[-Math.PI / 2, 0, 0]}>
+        <Lightformer intensity={3} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
+        {[2, 0, 2, 0, 2, 0, 2, 0].map((x, i) => (
+          <Lightformer key={i} form="circle" intensity={3} rotation={[Math.PI / 2, 0, 0]} position={[x, 4, i * 4]} scale={[4, 1, 1]} />
+        ))}
+        <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, 1, -1]} scale={[50, 2, 1]} />
+        <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, -1, -1]} scale={[50, 2, 1]} />
+        <Lightformer intensity={2} rotation-y={-Math.PI / 2} position={[10, 1, 0]} scale={[50, 1, 1]} />
+        <Lightformer form="ring" color="#c8261c" intensity={6} scale={2} position={[-15, 4, -18]} />
+      </group>
+    </Environment>
   );
 }
 

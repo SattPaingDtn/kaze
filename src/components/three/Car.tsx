@@ -30,7 +30,7 @@ export type CarTargets = {
   rim: RimFinish["id"];
   leather: string;
   xray: number; // 0 = solid, 1 = full x-ray
-  spin: number; // wheel speed 0..1
+  spin: number; // wheel speed: 1 ≈ show-room roll, negative = reversing
 };
 
 /** Live (damped) values other components can read, e.g. the engine reveal. */
@@ -42,10 +42,16 @@ export function Car({
   targets,
   reducedMotion = false,
   onReady,
+  shadow = true,
+  engine = true,
 }: {
   targets: RefObject<CarTargets>;
   reducedMotion?: boolean;
   onReady?: () => void;
+  /** Baked contact shadow (multiply blend — needs an opaque canvas). */
+  shadow?: boolean;
+  /** Lazy-load the x-ray engine model. */
+  engine?: boolean;
 }) {
   const { scene } = useGLTF(CAR_URL, DRACO_PATH);
   const invalidate = useThree((s) => s.invalidate);
@@ -184,7 +190,7 @@ export function Car({
 
     // Wheels
     spinSpeed.current = MathUtils.damp(spinSpeed.current, reducedMotion ? 0 : t.spin, 2, d);
-    if (spinSpeed.current > 0.001) {
+    if (Math.abs(spinSpeed.current) > 0.001) {
       rig.wheels.forEach((w) => w.rotateX(spinSpeed.current * d * 14));
       animating = true;
     }
@@ -197,8 +203,8 @@ export function Car({
     <group>
       <primitive object={rig.solid} />
       <primitive object={rig.ghost} />
-      <BakedShadow />
-      <DeferredEngine live={live} reducedMotion={reducedMotion} />
+      {shadow && <BakedShadow />}
+      {engine && <DeferredEngine live={live} reducedMotion={reducedMotion} />}
     </group>
   );
 }
