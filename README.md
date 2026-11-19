@@ -34,7 +34,7 @@ Then open http://localhost:3000 (Next picks 3001 if 3000 is busy). `/` redirects
 
   Both routes prerender as static pages.
 - `npm run typecheck` runs `tsc --noEmit`.
-- `npm run optimize:models` re-compresses `assets-src/engine.glb` → `public/models/engine.glb` (Draco).
+- `npm run optimize:models` re-compresses `assets-src/engine.glb` → `public/models/engine.v1.glb` (Draco). Re-exporting? Bump to `.v2` in the file name and in `ENGINE_URL`, because `/models` is cached as immutable.
 
 ---
 
@@ -96,7 +96,7 @@ src/
 | **Shared geometry for the X-ray ghost** | `Car.tsx` | `Object3D.clone()` shares BufferGeometry, so the X-ray copy costs no extra GPU memory. |
 | **Toggle `material.transparent` only on change** | `Car.tsx` | Changing it recompiles the shader program. Doing it every frame would stutter. |
 | **Manual `dispose()`** | `Car.tsx`, `Engine.tsx` | R3F only disposes what it created declaratively. Materials we build by hand must be disposed on unmount, or route changes leak GPU memory. |
-| **Immutable cache headers** | `next.config.ts` for `/models/*`, `/draco/*` | Repeat visits never re-download models. In production: version the file names and put them on CloudFront. |
+| **Immutable cache headers** | `next.config.ts` for `/models/*`, `/draco/*` | Repeat visits never re-download models. Safe because every file name carries a version (`car.v1.glb`, `draco/r187/`). |
 
 Baseline in the HUD (desktop, campaign): **~53 draw calls, ~359k triangles**, 0 frames when idle.
 
@@ -108,7 +108,7 @@ Baseline in the HUD (desktop, campaign): **~53 draw calls, ~359k triangles**, 0 
 - **Lenis smooth scroll** + `ScrollTrigger.scrollerProxy`.
 - **Post-processing** (bloom on the X-ray) with `@react-three/postprocessing`. Only on the high tier: every pass is a full-screen fill.
 - **Headless CMS** (Contentful/Sanity/microCMS): `src/content/car.ts` already has the shape. Fetch it in the Server Component with ISR.
-- **Deploy**: Vercel, or S3 + CloudFront with long-cache headers for `/models` and `/draco`.
+- **Deploy**: Vercel, or S3 + CloudFront with long-cache headers for `/models` and `/draco`. Set `NEXT_PUBLIC_SITE_URL` before building (Vercel fills it in from the production domain; under CI the build fails without it, see `src/lib/site.ts`).
 
 ---
 
@@ -214,7 +214,7 @@ The floor shader shows two more ideas: a grid that scrolls with a `uTravel` unif
 
 - **Car:** "Ferrari 458 Italia" glTF by vicent091036, from the three.js examples (`examples/models/gltf/ferrari.glb`). **CC BY 4.0.** Baked AO shadow from the same example. The campaign rebrands it as the fictional "KAZE GT-01" for practice only.
 - **Engine:** "2 Cylinder Engine" from KhronosGroup glTF-Sample-Models, **CC BY 4.0**, donated and converted by Okino Computer Graphics. Reskinned with PBR metals and Draco-compressed.
-- **Draco decoder:** Google, Apache-2.0 (copied from `three/examples/jsm/libs/draco`).
+- **Draco decoder:** Google, Apache-2.0 (copied from `three/examples/jsm/libs/draco/gltf`, the glTF-only build).
 - **Fonts:** Inter and Michroma via `next/font` (SIL OFL).
 
 The KAZE brand, copy and prices are invented. This is a non-commercial portfolio demo.

@@ -4,7 +4,7 @@ import { Inter, Michroma, Noto_Sans_JP } from "next/font/google";
 import { LOCALES, isLocale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import "../globals.scss";
-
+import { SITE_URL } from "@/lib/site";
 const inter = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 const michroma = Michroma({ subsets: ["latin"], weight: "400", variable: "--font-display", display: "swap" });
 /**
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Omit<Props, "children">): Pro
   if (!isLocale(lang)) return {};
   const t = await getDictionary(lang);
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+    metadataBase: new URL(SITE_URL), // never localhost in a deploy: see lib/site.ts
     title: t.meta.title,
     description: t.meta.description,
     openGraph: { locale: lang === "ja" ? "ja_JP" : "en_US", alternateLocale: lang === "ja" ? "en_US" : "ja_JP" },

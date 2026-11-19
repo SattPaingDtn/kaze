@@ -20,9 +20,9 @@ import { installLoadingBridge } from "./loadingBridge";
 
 installLoadingBridge(); // before useGLTF.preload (bottom of file) starts fetching
 
-export const CAR_URL = "/models/car.glb";
+export const CAR_URL = "/models/car.v1.glb"; // versioned: cached immutable (next.config.ts)
 /** Draco decoder is self-hosted (public/draco) — no third-party CDN at runtime. */
-export const DRACO_PATH = "/draco/";
+export const DRACO_PATH = "/draco/r187/"; // decoder copied from three r187
 
 /** "Targets" are written by UI / scroll; the car eases toward them every frame. */
 export type CarTargets = {
@@ -187,14 +187,14 @@ export function Car({
       <primitive object={rig.solid} />
       <primitive object={rig.ghost} />
       <BakedShadow />
-      <DeferredEngine live={live} />
+      <DeferredEngine live={live} reducedMotion={reducedMotion} />
     </group>
   );
 }
 
 /** Pre-baked ambient-occlusion texture: zero runtime shadow cost. */
 function BakedShadow() {
-  const map = useTexture("/models/car_ao.png");
+  const map = useTexture("/models/car_ao.v1.png");
   return (
     <mesh rotation-x={-Math.PI / 2} position-y={0.002} renderOrder={2}>
       <planeGeometry args={[0.655 * 4, 1.3 * 4]} />
@@ -207,7 +207,7 @@ function BakedShadow() {
  * Progressive loading: the engine GLB is only requested once the car is on
  * screen and the main thread is idle, so it never competes with the hero.
  */
-function DeferredEngine({ live }: { live: RefObject<CarLive> }) {
+function DeferredEngine({ live, reducedMotion }: { live: RefObject<CarLive>; reducedMotion: boolean }) {
   const [mount, setMount] = useState(false);
   useEffect(() => {
     // `timeout` guarantees it still loads on a busy main thread / background tab
@@ -218,7 +218,7 @@ function DeferredEngine({ live }: { live: RefObject<CarLive> }) {
   if (!mount) return null;
   return (
     <Suspense fallback={null}>
-      <Engine live={live} />
+      <Engine live={live} reducedMotion={reducedMotion} />
     </Suspense>
   );
 }

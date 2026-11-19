@@ -4,9 +4,9 @@
   --bg: #0b0c0e;
   --panel: #111215;
   --fg: #f2f1ee;
-  --muted: #a6a9b0; /* 8.4:1 on --bg — passes WCAG AA / JIS X 8341-3 */
+  --muted: #a6a9b0; /* 8.3:1 on --bg — passes WCAG AA / JIS X 8341-3 */
   --line: rgba(255, 255, 255, 0.12);
-  --accent: #c8261c; /* white text on this = 5.7:1 */
+  --accent: #c8261c; /* white text on this = 5.6:1 */
   --accent-text: #ff7a66;
   --focus: #5fe3ff;
   --gutter: clamp(16px, 6vw, 96px);
@@ -33,10 +33,10 @@ html {
   html {
     scroll-behavior: auto;
   }
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
+    /* 0.01ms, not none: animationend/transitionend still fire. Count 1: infinite loops end. */
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

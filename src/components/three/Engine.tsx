@@ -7,7 +7,7 @@ import { Box3, Color, Group, Mesh, MeshStandardMaterial, Vector3 } from "three";
 import type { CarLive } from "./Car";
 import { DRACO_PATH } from "./Car";
 
-export const ENGINE_URL = "/models/engine.glb";
+export const ENGINE_URL = "/models/engine.v1.glb";
 
 /** Where the engine bay is in car space (behind the cabin, mid-engine layout). */
 const BAY_CENTER = new Vector3(0, 0.58, 1.0);
@@ -18,7 +18,7 @@ const BAY_SIZE = 1.2; // longest side in metres
  * millimetres with flat CAD colours, so we normalise its size at runtime and
  * re-skin it with PBR metals that match the studio lighting.
  */
-export function Engine({ live }: { live: RefObject<CarLive> }) {
+export function Engine({ live, reducedMotion = false }: { live: RefObject<CarLive>; reducedMotion?: boolean }) {
   const { scene } = useGLTF(ENGINE_URL, DRACO_PATH);
   const group = useRef<Group>(null);
 
@@ -59,8 +59,8 @@ export function Engine({ live }: { live: RefObject<CarLive> }) {
     const x = live.current.xray;
     g.visible = x > 0.02;
     if (!g.visible) return;
-    // rises into place as the body turns to x-ray, with a subtle idle shake
-    const idle = Math.sin(state.clock.elapsedTime * 40) * 0.0012;
+    // rises into place as the body turns to x-ray, with a subtle idle shake (off with reduced motion)
+    const idle = reducedMotion ? 0 : Math.sin(state.clock.elapsedTime * 40) * 0.0012;
     g.position.set(BAY_CENTER.x, BAY_CENTER.y - (1 - x) * 0.35 + idle, BAY_CENTER.z);
     g.scale.setScalar(0.6 + 0.4 * x);
   });

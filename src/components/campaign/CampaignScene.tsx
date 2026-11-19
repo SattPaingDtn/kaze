@@ -21,7 +21,7 @@ export default function CampaignScene({ tier, reducedMotion, label }: { tier: Ti
 
   return (
     <Stage tier={tier} label={label}>
-      <Studio tier={tier} targets={targets} />
+      <Studio tier={tier} targets={targets} reducedMotion={reducedMotion} />
       <Suspense fallback={null}>
         <Car targets={targets} reducedMotion={reducedMotion} />
       </Suspense>

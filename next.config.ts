@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 /**
- * 3D assets are content-hashed by name in production pipelines (e.g. car.v3.glb),
- * so they can be cached "forever" on the CDN (CloudFront / Vercel Edge).
+ * 3D assets carry a version in the name (car.v1.glb, draco/r187/), so they can be
+ * cached "forever". Changed a file? Bump the name AND its constant, or visitors keep the old one.
  */
 const immutable = [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }];
 

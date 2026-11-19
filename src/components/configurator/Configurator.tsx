@@ -60,7 +60,7 @@ export function Configurator({ locale, t }: { locale: Locale; t: ConfiguratorTex
     if (p) setPaint(p.id);
     if (r) setRim(r.id);
     if (l) setLeather(l.id);
-    if (v && v in VIEWS) setView(v as ViewId);
+    if (v && Object.hasOwn(VIEWS, v)) setView(v as ViewId); // not `in`: "constructor" in VIEWS is true
     fromUrl.current = true;
   }, []);
 

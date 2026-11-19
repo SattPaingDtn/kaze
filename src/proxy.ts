@@ -37,7 +37,7 @@ function pickLocale(request: NextRequest): Locale {
       const [tag, q] = part.trim().split(";q=");
       return { lang: tag.toLowerCase().split("-")[0], q: q ? Number(q) : 1 };
     })
-    .filter((x) => x.lang && !Number.isNaN(x.q))
+    .filter((x) => x.lang && x.q > 0) // q=0 means "not acceptable"; NaN fails too
     .sort((a, b) => b.q - a.q);
 
   const hit = ranked.find((x) => isLocale(x.lang));

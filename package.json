@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "optimize:models": "gltf-transform optimize assets-src/engine.glb public/models/engine.glb --compress draco --texture-compress false --simplify false"
+    "optimize:models": "gltf-transform optimize assets-src/engine.glb public/models/engine.v1.glb --compress draco --texture-compress false --simplify false"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

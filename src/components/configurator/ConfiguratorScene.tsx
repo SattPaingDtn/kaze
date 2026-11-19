@@ -40,7 +40,7 @@ export default function ConfiguratorScene(p: SceneProps) {
 
   return (
     <Stage tier={p.tier} frameloop={frameloop} label={p.sceneLabel}>
-      <Studio tier={p.tier} targets={targets} />
+      <Studio tier={p.tier} targets={targets} reducedMotion={p.reducedMotion} />
       <Suspense fallback={null}>
         <Car targets={targets} reducedMotion={p.reducedMotion} />
         {!VIEWS[p.view].inside && <Hotspots active={p.activeHotspot} onSelect={p.onHotspot} labels={p.hotspotLabels} />}
@@ -115,9 +115,9 @@ function Rig({ view, autoRotate, reducedMotion, rigRef }: { view: ViewId; autoRo
       c.update();
       invalidate();
     };
-    gsap.to(camera.position, { x: pos.x, y: pos.y, z: pos.z, duration, ease, onUpdate, onComplete });
     gsap.to(c.target, { x: target.x, y: target.y, z: target.z, duration, ease });
     gsap.to(camera, { fov: shot.inside ? (portrait ? 80 : 65) : portrait ? 42 : 32, duration, ease });
+    gsap.to(camera.position, { x: pos.x, y: pos.y, z: pos.z, duration, ease, onUpdate, onComplete }); // last: with duration 0 these finish instantly, in order
     return () => {
       gsap.killTweensOf([camera.position, c.target, camera]);
     };
