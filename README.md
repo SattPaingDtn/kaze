@@ -1,15 +1,16 @@
 # KAZE GT-01 — 3D car campaign microsite
 
-This is a practice project for the Omnicom Content Experiences interview, for the **Lead Frontend Developer** role. It is a car-launch microsite with two routes:
+A 3D car-launch microsite for a fictional sports car, built as a portfolio project. It has three routes:
 
 | Route | What it shows |
 |---|---|
 | `/en` · `/ja` **Campaign** | Server-rendered story chapters. Scrolling drives one shared 3D camera through six chapters: hero, side profile, X-ray with the real engine, interior, colour swatches, and build. |
 | `/en/configurator` · `/ja/configurator` **Configurator** | Orbit and 360° spin; preset cameras (exterior, profile, rear, wheel, interior look-around, engine); paint, wheel and leather options with a live price; 3D hotspots; X-ray mode; keyboard control. |
+| `/en/test-drive` · `/ja/test-drive` **Test drive** | Drive the car through real Shibuya streets at night: OpenStreetMap data via MapLibre, with a three.js city of lit buildings, textured roads and street signs around the car. Keyboard or touch pedals. |
 
 Fully bilingual **English / 日本語**. The EN | JP switch keeps your place: the same chapter, and the same build in the configurator.
 
-Stack: **Next.js 16 (App Router) · React 19 · TypeScript · SCSS modules · three.js r187 · @react-three/fiber 9 · drei 10 · GSAP 3 + ScrollTrigger**. The same stack as the job description, with no CMS backend yet; the content is typed data in `src/content/car.ts`.
+Stack: **Next.js 16 (App Router) · React 19 · TypeScript · SCSS modules · three.js r187 · @react-three/fiber 9 · drei 10 · GSAP 3 + ScrollTrigger**. No CMS backend yet: the content is typed data in `src/content/car.ts`.
 
 ---
 
@@ -100,7 +101,7 @@ src/
 
 Baseline in the HUD (desktop, campaign): **~53 draw calls, ~359k triangles**, 0 frames when idle.
 
-### What I would add next (good interview answers)
+### What I would add next
 - **KTX2 / Basis textures**: GPU-compressed textures stay compressed in VRAM; PNG/JPG decode to full RGBA. Run `gltf-transform uastc` or `etc1s` and add `KTX2Loader`.
 - **LOD**: `<Detailed distances={[0, 15, 30]}>` with a simplified mesh (`gltf-transform simplify`). This car didn't need it: simplifying saved only ~12%.
 - **Instancing** for repeated parts (bolts, lights): `InstancedMesh` makes one draw call per material.
@@ -197,7 +198,7 @@ The floor shader shows two more ideas: a grid that scrolls with a `uTravel` unif
 
 ---
 
-## Interview demo script (~5 minutes)
+## Demo script (~5 minutes)
 
 1. **Open `/ja?perf`, then press EN.** "Each language is a static page with correct `lang` and hreflang. The switch keeps the chapter and the 3D scene isn't re-downloaded."
 2. **Scroll from the top with `?perf`.** "Copy is server-rendered: view source, it's all there. three.js arrives in a lazy chunk."
@@ -206,7 +207,7 @@ The floor shader shows two more ideas: a grid that scrolls with a `uTravel` unif
 4. **Open `/ja/configurator?paint=ai&rim=bronze&leather=tan`.** The build loads from the URL, priced 2,933万円. Change paint (smooth colour lerp), wheels (camera flies to the wheel), leather (camera goes inside). Then a hotspot, X-ray, and the 360° spin.
 5. **Keyboard only.** Tab to the stage, orbit with the arrows, press Esc. Mention JIS X 8341 and the aria-live price.
 6. **Mobile emulation.** Show DPR capped, the HUD numbers, and the layout.
-7. **Questions to expect:** "How would you make this faster?" (see *What I would add next*). "Why R3F instead of vanilla three?" (declarative scene, React state, same three objects underneath; drop to `useFrame`/refs for hot paths). "How do you avoid memory leaks?" (`dispose`, shared geometry, one Canvas per route).
+7. **Common questions:** "How would you make this faster?" (see *What I would add next*). "Why R3F instead of vanilla three?" (declarative scene, React state, same three objects underneath; drop to `useFrame`/refs for hot paths). "How do you avoid memory leaks?" (`dispose`, shared geometry, one Canvas per route).
 
 ---
 
